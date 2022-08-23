@@ -1,0 +1,14 @@
+TODO: 
+
+ - there is no dynamic reconfigure in ros2. The parameters can be set dynamically (through command line, etc). Use backend robotics to see how you can pass parameters to nodes. See how you can do that through GUI (same as adas-ros1). Write 'node/code' to do that
+{cfg files are python executables using dynamic_reconfigure package}
+
+TOMORROW: migrate 'car_*' packages with the cmake+package.xml changes
+
+UPDATE: need to import adas_common first
+
+------------------------------------------------------------------------------
+
+EASY PORTS:
+ - car_*
+ - treadmill_*
