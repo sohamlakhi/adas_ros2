@@ -1,0 +1,17 @@
+TODO: 
+    - annotate all C++ headers and source. (exclude param stuff and )
+    - need to convert all python scripts to python3 (refer: http://wiki.ros.org/noetic/Migration)
+    - need to link header libraries and regular libraries properly
+    - using boost and eigen
+
+NEED TO RE-ARCHTECTURE NODES, TOPICS, PARAMETERS AND LAUNCH SEQUENCE
+
+TODO: 
+    - rewrite lateral_controller source and header using tf2 datatypes
+
+LOOK: 
+    - tf2 transform datatypes function to transform datatypes to Eigen datatypes
+
+    annotate all of adas_commons and compile correctly
+    port some downstream packages
+    commit and push git

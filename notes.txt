@@ -7,8 +7,22 @@ TOMORROW: migrate 'car_*' packages with the cmake+package.xml changes
 
 UPDATE: need to import adas_common first
 
+Separate message paackage (write interface)
+Seperate launch package (write seperate launch file)
+
+
 ------------------------------------------------------------------------------
 
 EASY PORTS:
  - car_*
  - treadmill_*
+
+------------------------------------------------------------------------------
+
+You do not have to make a class, namespace every time you make a file. It can just be structs, functions, etc. 
+Consider header only libraries (think about how you would link them using cmake/ament --> look at RpiCAN repo and Martin Endler's push)
+write functions with more complex return types
+
+TODO: finish reading and annotating checksum
+        finish all of adas_common C++
+

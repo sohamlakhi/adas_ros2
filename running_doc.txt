@@ -1,0 +1,30 @@
+TF1/2
+
+RESOURCES: 
+https://wiki.ros.org/tf
+Tf1 documentation: http://docs.ros.org/en/melodic/api/tf/html/c++/index.html
+http://wiki.ros.org/tf
+https://docs.ros2.org/foxy/api/tf2/classtf2_1_1Transform.html
+https://docs.ros2.org/foxy/api/tf2/classtf2_1_1Stamped.html
+https://docs.ros2.org/foxy/api/tf2/namespacetf2.html
+https://docs.ros2.org/foxy/api/tf2/classtf2_1_1BufferCore.html
+https://docs.ros2.org/foxy/api/tf2/classtf2_1_1Transform.html
+https://docs.ros2.org/foxy/api/tf2/classtf2_1_1tf2Vector4.html
+https://docs.ros2.org/foxy/api/tf2/classtf2_1_1Matrix3x3.html#a4f73667442e95618c8a06986b14b022f
+http://wiki.ros.org/tf2_eigen
+
+
+http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions
+http://wiki.ros.org/tf2/Tutorials/Create%20Data%20Conversion%20Package%20%28C%2B%2B%29
+
+The Tf1 and 2 API is present in ROS1 and ROS2. Need to include the correct header files and colcon will install them
+No package needed
+tf2_* packages can be found in the rosdep build farm. There is one for eigen to convert datatypes
+
+ROSDEP BUILD FARM: https://github.com/ros/rosdistro
+
+look for Pose(maybe Transform) and look for getYaw
+
+ULTIMATE ROS2 RESOURCE: https://docs.ros2.org/foxy/api/
+
+tf2::Transform stores the rotation matrix/quaternion & position and has member functions to manipulate the data
