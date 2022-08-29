@@ -172,7 +172,7 @@ double castDistance(const tf2::Transform &start,
 
         t += tIncrement;
 
-        GridInfo::RowCol rowCol = gridInfo.toRowCol(tf::Vector3(x, y, 0.0));
+        GridInfo::RowCol rowCol = gridInfo.toRowCol(tf2::Vector3(x, y, 0.0));
         if (rowCol.first < 0 || rowCol.first >= static_cast<int>(gridInfo.height))
         { continue; }
         if (rowCol.second < 0 || rowCol.second >= static_cast<int>(gridInfo.width))

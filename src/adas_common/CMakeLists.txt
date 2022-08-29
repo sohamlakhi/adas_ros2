@@ -1,126 +1,164 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(adas_common)
 
-set(CMAKE_CXX_STANDARD 11)
-add_compile_options(-Wall)
-string(TOUPPER "${CMAKE_BUILD_TYPE}" build_type)
-if(${build_type} MATCHES RELEASE)
-    add_compile_options(-march=native)
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
 endif()
 
-# Build deps
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+#find packages that ALL the library code depends on
+foreach(PACKAGE 
+  ament_cmake
+  rclcpp
   nav_msgs
-  geometry_msgs
-  message_generation
-)
+  geometry_msgs)
 
-# Add any third party dependency
+  find_package(${PACKAGE} REQUIRED)
 
-catkin_python_setup()
+endforeach()
 
-# Message generation, if required
-add_message_files(
-  FILES
-  ProfileTime.msg
-  StateWithCovariance.msg
-)
 
-generate_messages()
+#Making libraries STATIC for now
+include_directories(include) #adds include property INCLUDE_DIRECTORIES relative to src of current cmakelists.txt. The compiler can now look for these header files
 
-# Runtime dependency
-catkin_package(
-  INCLUDE_DIRS include
-  DEPENDS roscpp nav_msgs geometry_msgs message_runtime
-)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
-add_library(adas_common_bytes_helper STATIC src/bytes_helper.cpp)
+#bytes_helper (contains no header only libraries)
+#set(BYTES_HELPER_HEADER_FILES include/${PROJECT_NAME}/bytes_helper.hpp)
+add_library(adas_common_bytes_helper STATIC src/bytes_helper.cpp) #${BYTES_HELPER_HEADER_FILES} -> try without compiling headers (find with target_include_directories)
 set_property(TARGET adas_common_bytes_helper PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-catkin_add_gtest(adas_common_bytes_helper_test src/test/bytes_helper_test.cpp)
-target_link_libraries(adas_common_bytes_helper_test pthread adas_common_bytes_helper)
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_bytes_helper
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 
-add_library(adas_common_controllers STATIC src/pid_controller.cpp src/lateral_controllers.cpp)
-set_property(TARGET adas_common_controllers PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(adas_common_controllers
-  ${catkin_LIBRARIES}
+ament_export_targets(adas_common_bytes_helper HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_bytes_helper
+  EXPORT adas_common_bytes_helper
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
-catkin_add_gtest(pid_controller_test src/test/pid_controller_test.cpp)
-target_link_libraries(pid_controller_test pthread adas_common_controllers)
-
-catkin_add_gtest(lateral_controllers_test src/test/lateral_controllers_test.cpp)
-target_link_libraries(lateral_controllers_test pthread adas_common_controllers)
-
-add_library(adas_common_params STATIC src/params.cpp)
-set_property(TARGET adas_common_params PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(adas_common_params
-  ${catkin_LIBRARIES}
-)
-
-add_library(adas_common_occupancy_grid_utils STATIC src/occupancy_grid_utils.cpp)
-set_property(TARGET adas_common_occupancy_grid_utils PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(adas_common_occupancy_grid_utils
-  ${catkin_LIBRARIES}
-)
-
-add_library(adas_common_profiler STATIC src/profiler.cpp)
-set_property(TARGET adas_common_profiler PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(adas_common_profiler
-  ${catkin_LIBRARIES}
-  adas_common_params
-)
-add_dependencies(adas_common_profiler adas_common_generate_messages_cpp)
-
-catkin_add_gtest(time_diff_test src/test/time_diff_test.cpp)
-target_link_libraries(time_diff_test pthread)
-
-catkin_add_gtest(occupancy_grid_utils_test src/test/occupancy_grid_utils_test.cpp)
-target_link_libraries(occupancy_grid_utils_test adas_common_occupancy_grid_utils pthread)
-
-add_library(adas_common_ros_time_diff STATIC src/ros_time_diff.cpp)
-set_property(TARGET adas_common_ros_time_diff PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(adas_common_ros_time_diff
-  ${catkin_LIBRARIES}
-)
-
+#checksum 
 add_library(adas_common_checksum STATIC src/checksum.cpp)
 set_property(TARGET adas_common_checksum PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(adas_common_checksum
-  ${catkin_LIBRARIES}
   adas_common_bytes_helper
 )
-catkin_add_gtest(checksum_test src/test/checksum_test.cpp)
-target_link_libraries(checksum_test adas_common_checksum pthread)
 
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_checksum
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+ament_export_targets(adas_common_checksum HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_checksum
+  EXPORT adas_common_checksum
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+#controllers
+add_library(adas_common_controllers STATIC src/pid_controller.cpp src/lateral_controllers.cpp)
+set_property(TARGET adas_common_controllers PROPERTY POSITION_INDEPENDENT_CODE ON)
+ament_target_dependencies(adas_common_controllers
+  rclcpp
+) #needed for tf2/utils.h
+
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_controllers
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+ament_export_targets(adas_common_controllers HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_controllers
+  EXPORT adas_common_controllers
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+#occupancy grid utils
+add_library(adas_common_occupancy_grid_utils STATIC src/occupancy_grid_utils.cpp)
+set_property(TARGET adas_common_occupancy_grid_utils PROPERTY POSITION_INDEPENDENT_CODE ON)
+ament_target_dependencies(adas_common_occupancy_grid_utils
+  rclcpp
+)
+
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_occupancy_grid_utils
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+ament_export_targets(adas_common_occupancy_grid_utils HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_occupancy_grid_utils
+  EXPORT adas_common_occupancy_grid_utils
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+install(
+  DIRECTORY include/adas_common
+  DESTINATION include
+)
+
+#encode-decode
 add_library(adas_common_encode_decode STATIC src/encode_decode.cpp)
 set_property(TARGET adas_common_encode_decode PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-catkin_add_gtest(encode_decode_test src/test/encode_decode_test.cpp)
-target_link_libraries(encode_decode_test adas_common_encode_decode pthread)
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_encode_decode
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 
-add_library(adas_common_serial_protocol STATIC src/serial_protocol.cpp)
-set_property(TARGET adas_common_serial_protocol PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(adas_common_serial_protocol
-  ${catkin_LIBRARIES}
-  adas_common_bytes_helper
-  adas_common_checksum
+ament_export_targets(adas_common_encode_decode HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_encode_decode
+  EXPORT adas_common_encode_decode
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
-catkin_add_gtest(serial_protocol_test src/test/serial_protocol_test.cpp)
-target_link_libraries(serial_protocol_test adas_common_serial_protocol pthread)
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # uncomment the line when a copyright and license is not present in all source files
+  #set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # uncomment the line when this package is not in a git repo
+  #set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
-catkin_add_gtest(lerp_test src/test/lerp_test.cpp)
-target_link_libraries(lerp_test pthread)
-
-catkin_add_gtest(span_test src/test/span_test.cpp)
-target_link_libraries(span_test pthread)
-
-# Nodelet, if required
-
+ament_package()

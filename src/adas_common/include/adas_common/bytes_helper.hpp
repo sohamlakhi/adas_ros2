@@ -42,6 +42,6 @@ uint16_t to16(const uint8_t upper, const uint8_t lower);
  */
 std::pair<uint8_t, uint8_t> from16(const uint16_t data);
 
-};
+}
 
 #endif
