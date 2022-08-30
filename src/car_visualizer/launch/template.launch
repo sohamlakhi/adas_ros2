@@ -1,0 +1,3 @@
+<launch>
+    <node output="screen" name="car_visualizer" pkg="car_visualizer" type="car_visualizer_node"/>
+</launch>

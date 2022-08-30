@@ -23,6 +23,5 @@ You do not have to make a class, namespace every time you make a file. It can ju
 Consider header only libraries (think about how you would link them using cmake/ament --> look at RpiCAN repo and Martin Endler's push)
 write functions with more complex return types
 
-TODO: finish reading and annotating checksum
-        finish all of adas_common C++
+TODO: NEED TO FIGURE OUT LAUNCH SEQUENCE AND PARAMETER RETRIEVAL (POSSIBLY WRAPPING)
 
