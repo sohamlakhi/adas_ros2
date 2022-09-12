@@ -1,19 +1,19 @@
+//parameter header
 #include "adas_common/params.hpp"
 
 #include <sstream>
 
-#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/msg/pose.h>
 
 using std::vector;
 using std::map;
 using std::string;
 using std::stringstream;
-using XmlRpc::XmlRpcValue;
+//using XmlRpc::XmlRpcValue;
 
-// TODO: Use of the bare interface (e.g. ros::param::get() instead of node.getParam()) would be more convenient
+// TODO: (deprecated -> ROS1) Use of the bare interface (e.g. ros::param::get() instead of node.getParam()) would be more convenient
 
-namespace adas_common
-{
+namespace adas_common {
 
 string getCarPath(unsigned int carId, const std::string &postfix)
 {
@@ -28,29 +28,36 @@ std::string getPathById(const std::string &base, unsigned int id, const std::str
     return nodeStream.str();
 }
 
-bool boolParam(ros::NodeHandle &node, const string &name)
+bool boolParam(rclcpp::Node *node, const string &name)
 {
     bool value;
-    bool result = node.getParam(name, value);
+    bool result = node->get_parameter(name, value);
+    if (!result)
+    { throw std::runtime_error("Failed to retrieve " + name); }
+
+    return value;
+}
+/**
+ * TODO: need to figure out replacement to node.param() function
+ * 
+ */
+
+bool boolParamWithDefault(rclcpp::Node *node, const std::string &name, const bool defaultValue)
+{
+    bool value;
+    // node.param(name, value, defaultValue);
+    bool result = node->get_parameter(name, value);
     if (!result)
     { throw std::runtime_error("Failed to retrieve " + name); }
 
     return value;
 }
 
-bool boolParamWithDefault(ros::NodeHandle &node, const std::string &name, const bool defaultValue)
-{
-    bool value;
-    node.param(name, value, defaultValue);
-
-    return value;
-}
-
-std::vector<double> vectorPosDoubleParam(ros::NodeHandle &node, const std::string &name)
+std::vector<double> vectorPosDoubleParam(rclcpp::Node *node, const std::string &name)
 {
     std::vector<double> value;
 
-    bool result = node.getParam(name, value);
+    bool result = node->get_parameter(name, value);
     if (!result)
     { throw std::runtime_error("Failed to retrieve " + name); }
 
@@ -63,7 +70,7 @@ std::vector<double> vectorPosDoubleParam(ros::NodeHandle &node, const std::strin
     return value;
 }
 
-std::vector<double> vectorPosDoubleParam(ros::NodeHandle &node, const std::string &name, unsigned int size)
+std::vector<double> vectorPosDoubleParam(rclcpp::Node *node, const std::string &name, unsigned int size)
 {
     std::vector<double> value = vectorPosDoubleParam(node, name);
 
@@ -73,10 +80,10 @@ std::vector<double> vectorPosDoubleParam(ros::NodeHandle &node, const std::strin
     return value;
 }
 
-double doubleParam(ros::NodeHandle &node, const std::string &name, double min, double max)
+double doubleParam(rclcpp::Node *node, const std::string &name, double min, double max)
 {
     double doubleParsed;
-    bool result = node.getParam(name, doubleParsed);
+    bool result = node->get_parameter(name, doubleParsed);
 
     if (!result)
     { throw std::runtime_error("Failed to retrieve " + name); }
@@ -89,40 +96,45 @@ double doubleParam(ros::NodeHandle &node, const std::string &name, double min, d
     return doubleParsed;
 }
 
-double doubleParam(const std::string &name, double min, double max)
-{
-    double doubleParsed;
-    bool result = ros::param::get(name, doubleParsed);
+/**
+ * TODO: need to figure out overloading this function
+ * 
+ */
 
-    if (!result)
-    { throw std::runtime_error("Failed to retrieve " + name); }
+// double doubleParam(const std::string &name, double min, double max)
+// {
+//     double doubleParsed;
+//     bool result = ros::param::get(name, doubleParsed);
 
-    if (doubleParsed < min)
-    { throw std::runtime_error(name + " exceeds the minimum value."); }
-    if (doubleParsed > max)
-    { throw std::runtime_error(name + " exceeds the maximum value."); }
+//     if (!result)
+//     { throw std::runtime_error("Failed to retrieve " + name); }
 
-    return doubleParsed;
-}
+//     if (doubleParsed < min)
+//     { throw std::runtime_error(name + " exceeds the minimum value."); }
+//     if (doubleParsed > max)
+//     { throw std::runtime_error(name + " exceeds the maximum value."); }
 
-double doubleOverridableParam(
-    const std::string &baseName,
-    const std::string &overrideName,
-    double min,
-    double max)
-{
-    double doubleParsed;
-    bool overridden = ros::param::get(overrideName, doubleParsed);
-    if (overridden)
-    { return doubleParsed; }
+//     return doubleParsed;
+// }
 
-    return doubleParam(baseName, min, max);
-}
+// double doubleOverridableParam(
+//     const std::string &baseName,
+//     const std::string &overrideName,
+//     double min,
+//     double max)
+// {
+//     double doubleParsed;
+//     bool overridden = ros::param::get(overrideName, doubleParsed);
+//     if (overridden)
+//     { return doubleParsed; }
 
-string nonEmptyStringParam(ros::NodeHandle &node, const string &name)
+//     return doubleParam(baseName, min, max);
+// }
+
+string nonEmptyStringParam(rclcpp::Node *node, const string &name)
 {
     string stringParsed;
-    bool result = node.getParam(name, stringParsed);
+    bool result = node->get_parameter(name, stringParsed);
 
     if (!result)
     { throw std::runtime_error("Failed to retrieve " + name); }
@@ -132,17 +144,22 @@ string nonEmptyStringParam(ros::NodeHandle &node, const string &name)
     return stringParsed;
 }
 
-std::string defaultStringParam(
-    ros::NodeHandle &node,
-    const std::string &name,
-    const std::string &defaultValue)
+std::string defaultStringParam(rclcpp::Node *node, const std::string &name, const std::string &defaultValue)
 {
-    std::string ret;
-    node.param<std::string>(name, ret, defaultValue);
-    return ret;
+    // std::string ret;
+    // node.param<std::string>(name, ret, defaultValue);
+
+    string stringParsed;
+    bool result = node->get_parameter(name, stringParsed);
+
+    if (!result)
+    { throw std::runtime_error("Failed to retrieve " + name); }
+    if (stringParsed.empty())
+    { throw std::runtime_error(name + " is an empty string."); }
+    return stringParsed;
 }
 
-std::vector<CarTagInfo> getCarTagInfo(ros::NodeHandle &node)
+std::vector<CarTagInfo> getCarTagInfo(rclcpp::Node *node)
 {
     unsigned int numCars = integerParam<unsigned int>(node, "/num_cars");
     std::vector<CarTagInfo> tagInfos;
@@ -162,15 +179,17 @@ std::vector<CarTagInfo> getCarTagInfo(ros::NodeHandle &node)
     return tagInfos;
 }
 
-nav_msgs::MapMetaData getTreadmillGridInfo(ros::NodeHandle &node)
+nav_msgs::msg::MapMetaData getTreadmillGridInfo(rclcpp::Node *node)
 {
-    nav_msgs::MapMetaData mapInfo;
+    //nav_msgs::msg::MapMetaData mapInfo;
+    auto mapInfo = nav_msgs::msg::MapMetaData();
 
     mapInfo.resolution = doubleParam(node, "top_down_estimator/grid_m_per_cell");
     mapInfo.width = std::ceil(doubleParam(node, "treadmill/length") / mapInfo.resolution);
     mapInfo.height = std::ceil(vectorPosDoubleParam(node, "treadmill/lanes").back() / mapInfo.resolution);
 
-    geometry_msgs::Pose origin;
+    //geometry_msgs::Pose origin;
+    auto origin = geometry_msgs::msg::Pose();
     origin.position.x = 0;
     origin.position.y = 0;
     origin.position.z = 0;

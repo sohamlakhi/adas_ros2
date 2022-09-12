@@ -25,3 +25,7 @@ write functions with more complex return types
 
 TODO: NEED TO FIGURE OUT LAUNCH SEQUENCE AND PARAMETER RETRIEVAL (POSSIBLY WRAPPING)
 
+TODAY: compare launch in ros2 and ros1
+        compare parameter architecture in ros1 and ros2
+        look at dynamic_reconfigure and 
+

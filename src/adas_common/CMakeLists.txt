@@ -150,6 +150,30 @@ install(
   INCLUDES DESTINATION include
 )
 
+#params
+add_library(adas_common_params STATIC src/params.cpp)
+set_property(TARGET adas_common_params PROPERTY POSITION_INDEPENDENT_CODE ON)
+ament_target_dependencies(adas_common_params
+  rclcpp geometry_msgs nav_msgs
+)
+
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_params
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+ament_export_targets(adas_common_params HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_params
+  EXPORT adas_common_params
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

@@ -27,15 +27,20 @@ endforeach()
 
 include_directories(include)
 
-add_executable (bytes_test src/bytes_test.cpp)
-ament_target_dependencies(bytes_test 
-  rclcpp adas_common
-)
+#add_executable (bytes_test src/bytes_test.cpp)
+#ament_target_dependencies(bytes_test 
+#  rclcpp adas_common
+#)
 
+add_executable (objtest src/objecttest.cpp)
+ament_target_dependencies(objtest 
+  rclcpp 
+)
 
 # Install Cpp executables
 install(TARGETS
-  bytes_test
+  #bytes_test
+  objtest
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
