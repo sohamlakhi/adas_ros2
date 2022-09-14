@@ -32,3 +32,19 @@ tf2::Transform stores the rotation matrix/quaternion & position and has member f
 Sept, 12 2022:
 we can pass a shared pointer to a derived class where a parent class is required. It implicitly casts it. You can cast it explicitly where required
 see: https://www.internalpointers.com/post/move-smart-pointers-and-out-functions-modern-c
+
+Sept, 13 2022:
+ROS Index: https://index.ros.org/ Contains all packages, their versions and further information. Can clone and build manually or use rosdep and package.xml
+
+Sept 14, 2022
+rosdep uses apt keys to find the package and install. It crawls through the package.xml file to find the required packages
+You can manually install the package using sudo apt (the apt keys)
+You can find the package repo, clone it and build it using colcon (might have to manage dependencies)
+https://github.com/ros/rosdistro (can check for packages and their source code)
+Look at Linux package managers
+
+ROS resources:
+https://github.com/ros
+https://github.com/ros2
+
+time and duration from fundamental message data types has been moved to builtin interfaces package

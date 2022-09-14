@@ -1,39 +1,46 @@
 #include "adas_common/profiler.hpp"
 #include "adas_common/params.hpp"
 
+//this might create issues
+//using namespace adas_common 
 namespace adas_common
 {
-Profiler::Profiler(
-    ros::NodeHandle &node,
-    const std::string &name) :
-    measuring{false},
-    enabled{adas_common::boolParamWithDefault(node, "/profiler/" + name + "/enabled", false)}
-{
-    if (enabled)
-    { pub = node.advertise<adas_common::ProfileTime>("/profiler/" + name, 1); }
+Profiler::Profiler(rclcpp::Node *node, const std::string &name) : measuring{false}, enabled{adas_common::boolParamWithDefault(node, "/profiler/" + name + "/enabled", false)} {
+    
+    if (enabled) { 
+        pub = node->create_publisher<adas_interfaces::msg::ProfileTime>("/profiler/" + name, 1);
+    }
 }
 
-void Profiler::tick()
+void Profiler::tick(rclcpp::Node *node)
 {
     if (!enabled) { return; }
-    prev = ros::Time::now();
+    prev = node->get_clock()->now();
     measuring = true;
 }
 
-void Profiler::tock(const uint8_t id)
+void Profiler::tock(rclcpp::Node *node, const uint8_t id)
 {
     if (!enabled) { return; }
 
-    ros::Time curr = ros::Time::now();
-    adas_common::ProfileTime msg;
+    rclcpp::Time curr = node->get_clock()->now();
+    auto msg = adas_interfaces::msg::ProfileTime();
 
     msg.stamp = curr;
     msg.id = id;
-    msg.duration = (curr - prev).toSec();
+    /**
+     * NOTE: might have to use .seconds()
+     * 
+     */
+    msg.duration = (curr - prev).nanoseconds(); 
 
     measuring = false;
 
-    pub.publish(msg);
+    pub->publish(msg);
 }
 
 }
+/**
+ * need to add dependencies in cmakelists to adas_interfaces
+ * 
+ */

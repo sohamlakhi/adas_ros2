@@ -4,7 +4,11 @@
 #include <string>
 #include <functional>
 
+#include "adas_common/pid_controller.hpp"
+
 #define NODE_NAME "objecttest" 
+
+using namespace adas_common;
 
 class paramTest {
     public:
@@ -44,7 +48,14 @@ class bigtest : public rclcpp::Node {
             get_param_from_local_ns (this);
             //get_param_from_local_ns (this);
             paramTest::get_parameter_from_class (this);
+
+            velController = PIDController(1.0,2.0,3.0,4.0,5.0);
+
+            RCLCPP_INFO (this->get_logger(), "<%f, %f>", velController.p, velController.i);
         }
+
+        private:
+            adas_common::PIDController velController;
 
 };
 

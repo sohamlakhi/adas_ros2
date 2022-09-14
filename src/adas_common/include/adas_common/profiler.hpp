@@ -1,9 +1,11 @@
 #ifndef PROFILER_HPP_
 #define PROFILER_HPP_
 
-#include <ros/ros.h>
+//RCL header
+#include "rclcpp/rclcpp.hpp"
 
-#include "adas_common/ProfileTime.h"
+//msg headers
+#include "adas_interfaces/msg/profile_time.hpp"
 
 namespace adas_common
 {
@@ -11,15 +13,16 @@ namespace adas_common
 class Profiler
 {
 public:
-    Profiler(ros::NodeHandle &node, const std::string &name);
+    Profiler(rclcpp::Node *node, const std::string &name);
 
-    void tick();
-    void tock(const uint8_t id);
+    void tick(rclcpp::Node *node);
+    void tock(rclcpp::Node *node, const uint8_t id);
 private:
-    ros::Time prev;
+    rclcpp::Time prev;
     bool measuring;
     bool enabled;
-    ros::Publisher pub;
+    rclcpp::Publisher<adas_interfaces::msg::ProfileTime>::SharedPtr pub;  
+
 };
 
 }

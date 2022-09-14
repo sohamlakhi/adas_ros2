@@ -19,7 +19,6 @@ endif()
 foreach(PACKAGE 
   ament_cmake
   rclcpp
-  adas_interfaces
   nav_msgs
   geometry_msgs)
 
@@ -174,32 +173,6 @@ install(
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
-
-#profiler
-add_library(adas_common_profiler STATIC src/profiler.cpp)
-set_property(TARGET adas_common_profiler PROPERTY POSITION_INDEPENDENT_CODE ON)
-ament_target_dependencies(adas_common_profiler
-  rclcpp adas_interfaces
-)
-target_link_libraries(adas_common_profiler adas_common_params)
-
-#specifies which include directories to use while building and installing the target
-target_include_directories(adas_common_profiler
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
-
-ament_export_targets(adas_common_profiler HAS_LIBRARY_TARGET)
-
-install(
-  TARGETS adas_common_profiler
-  EXPORT adas_common_profiler
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(testing)
+project(adas_interfaces)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -15,35 +15,25 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+#find packages that ALL the library code depends on
 foreach(PACKAGE 
-  ament_cmake 
-  rclcpp
-  adas_common
-  geometry_msgs
-  nav_msgs)
+  ament_cmake
+  rosidl_default_generators)
 
   find_package(${PACKAGE} REQUIRED)
 
 endforeach()
 
-include_directories(include)
-
-#add_executable (bytes_test src/bytes_test.cpp)
-#ament_target_dependencies(bytes_test 
-#  rclcpp adas_common
-#)
-
-add_executable (objtest src/objecttest.cpp)
-ament_target_dependencies(objtest 
-  rclcpp adas_common
+#message generation tool
+set(msg_files 
+  "msg/ProfileTime.msg"
+)
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
 )
 
-# Install Cpp executables
-install(TARGETS
-  #bytes_test
-  objtest
-  DESTINATION lib/${PROJECT_NAME})
+ament_export_dependencies(rosidl_default_runtime)
+ament_export_include_directories(include)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
