@@ -1,7 +1,7 @@
 #ifndef ADAS_ROS_TIME_DIFF_HPP_
 #define ADAS_ROS_TIME_DIFF_HPP_
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 namespace adas_common
 {
@@ -10,10 +10,10 @@ class RosTimeDiff
 {
 public:
     RosTimeDiff();
-    bool update(ros::Duration &diff);
+    bool update(rclcpp::Duration &diff, rclcpp::Node *node);
     void reset();
 private:
-    ros::Time prevTime;
+    rclcpp::Time prevTime;
 };
 
 }

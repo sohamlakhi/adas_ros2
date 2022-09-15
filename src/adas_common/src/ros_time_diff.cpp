@@ -3,15 +3,14 @@
 namespace adas_common
 {
 
-RosTimeDiff::RosTimeDiff()
-    : prevTime(0)
+RosTimeDiff::RosTimeDiff() : prevTime(0)
 {}
 
-bool RosTimeDiff::update(ros::Duration &diff)
+bool RosTimeDiff::update(rclcpp::Duration &diff, rclcpp::Node *node)
 {
-    ros::Time currTime = ros::Time::now();
+    rclcpp::Time currTime = node->get_clock()->now();
 
-    if (prevTime == ros::Time(0))
+    if (prevTime == rclcpp::Time(0))
     {
         prevTime = currTime;
         return false;
@@ -22,13 +21,13 @@ bool RosTimeDiff::update(ros::Duration &diff)
      * to /clock), it is very possible that the time hasn't progressed. This _should_ be an
      * extremely transient condition, so let go of the CPU until it is resolved.
      */
-    while (currTime == prevTime && ros::ok())
+    while (currTime == prevTime && rclcpp::ok())
     {
-        currTime = ros::Time::now();
+        currTime = node->get_clock()->now();
         sched_yield();
     }
 
-    if (!ros::ok())
+    if (!rclcpp::ok())
     { return false; }
 
     diff = currTime - prevTime;
@@ -39,7 +38,7 @@ bool RosTimeDiff::update(ros::Duration &diff)
 
 void RosTimeDiff::reset()
 {
-    prevTime = ros::Time(0);
+    prevTime = rclcpp::Time(0);
 }
 
 }

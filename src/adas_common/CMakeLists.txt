@@ -200,6 +200,29 @@ install(
   INCLUDES DESTINATION include
 )
 
+#ros_time_diff
+add_library(adas_common_ros_time_diff STATIC src/ros_time_diff.cpp)
+set_property(TARGET adas_common_ros_time_diff PROPERTY POSITION_INDEPENDENT_CODE ON)
+ament_target_dependencies(adas_common_ros_time_diff
+  rclcpp 
+)
+
+#specifies which include directories to use while building and installing the target
+target_include_directories(adas_common_ros_time_diff
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+ament_export_targets(adas_common_ros_time_diff HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS adas_common_ros_time_diff
+  EXPORT adas_common_ros_time_diff
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

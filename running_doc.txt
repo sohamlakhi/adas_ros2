@@ -46,5 +46,32 @@ Look at Linux package managers
 ROS resources:
 https://github.com/ros
 https://github.com/ros2
+ros1 API: http://wiki.ros.org/APIs
+https://index.ros.org/ 
+https://github.com/ros/rosdistro (can check for packages and their source code)
+ROSDEP BUILD FARM: https://github.com/ros/rosdistro
 
 time and duration from fundamental message data types has been moved to builtin interfaces package
+
+CURRENT UNDERSTANDING OF CLOCK AND TIME: In ros1, there is simulated clock time and wall time (from the system). They can both be accessed without initialising a node object
+                                         In ros2, you need a node to access this default clock
+                                         https://answers.ros.org/question/287946/ros-2-time-handling/
+                                         http://wiki.ros.org/Clock
+                                         http://wiki.ros.org/roscpp_tutorials/Tutorials/Timers
+                                         http://wiki.ros.org/roscpp/Overview/Time
+                                         https://design.ros2.org/articles/clock_and_time.html
+
+I am porting code from ROS1 to ROS2 and am fumbling when it comes to time, clocks and duration. I understand how it works in ROS1 and its corresponding API. I am unclear as to how it works in ROS2 and why we need a node to get the time (e.g. node->get_clock()->now() in ROS2 vs ros::Time::now() in ROS1)
+
+Can someone please conceptually explain how time works in ROS2 and how it is different from ROS1? 
+
+Thank you in advance!
+
+Could someone please explain how time, clock and duration work in ROS2 and how it is different from ROS1? 
+
+Sept15, 2022
+Can implement and write your own tf conversion package by overloading the tf2::doTransform templated function
+Refer to already implemented functions like tf2_bullet etc.
+See: http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions
+    http://wiki.ros.org/tf2/Tutorials/Create%20Data%20Conversion%20Package%20%28C%2B%2B%29
+    

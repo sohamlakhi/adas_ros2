@@ -25,6 +25,7 @@ http://docs.ros.org/en/humble/p/message_filters/ http://docs.ros.org/en/humble/p
 
 //tf2 headers
 #include "tf2/utils.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 
 //headers to code written by you
 #include <adas_common/pid_controller.hpp>
@@ -32,8 +33,8 @@ http://docs.ros.org/en/humble/p/message_filters/ http://docs.ros.org/en/humble/p
 #include <adas_common/params.hpp>
 #include <adas_common/consts.hpp>
 #include <adas_common/lerp.hpp>
-// #include <adas_common/ros_time_diff.hpp>
-// #include <adas_common/profiler.hpp>
+#include <adas_common/ros_time_diff.hpp>
+#include <adas_common/profiler.hpp>
 
 //other macros
 #define NODE_NAME "car_controller" 
@@ -104,6 +105,8 @@ namespace ros_car_controller {
                 posIThreshold = adas_common::doubleParam(node, "controller/pos/i_threshold", 0.0);
                 discontinuityThreshold = adas_common::doubleParam(node, "controller/pos/discontinuity_threshold", 0.0);
                 goalReceived = false;
+
+                profiler = Profiler(this, "car_controller_" + std::to_string(integerParam<unsigned int>(this, "car_id")));
             }
 
         protected:
@@ -151,6 +154,25 @@ namespace ros_car_controller {
                     return;
                 }
 
+                rclcpp::Duration diff;
+
+                /**
+                 * @brief if time has not progressed, exit synccallback
+                 * 
+                 */
+                if (!timediff.update(diff, this)) {
+                    return;
+                }
+                
+                //tick time forward if profiler has been created (which it has below)
+                profiler.tick();
+
+                tf2::Transform observedPose;
+                tf2::convert (pose, observedPose); //(data_in, data_out)
+
+                const double velCommand = posController.commandStep(0.0, pose->pose.position.x, diff.seconds());
+
+                
                 
             }
 
@@ -189,8 +211,8 @@ namespace ros_car_controller {
 
             bool goalReceived;
 
-            //adas_common::Profiler profiler;
-            // adas_common::RosTimeDiff timeDiff;
+            adas_common::Profiler profiler;
+            adas_common::RosTimeDiff timeDiff;
 
         };
 

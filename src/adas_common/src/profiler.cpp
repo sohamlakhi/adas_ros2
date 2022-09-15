@@ -32,7 +32,7 @@ void Profiler::tock(rclcpp::Node *node, const uint8_t id)
      * NOTE: might have to use .seconds()
      * 
      */
-    msg.duration = (curr - prev).nanoseconds(); 
+    msg.duration = (curr - prev).seconds(); 
 
     measuring = false;
 
