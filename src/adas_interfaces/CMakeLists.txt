@@ -18,15 +18,17 @@ endif()
 #find packages that ALL the library code depends on
 foreach(PACKAGE 
   ament_cmake
-  rosidl_default_generators)
+  rosidl_default_generators
+  builtin_interfaces)
 
   find_package(${PACKAGE} REQUIRED)
 
 endforeach()
 
-#message generation tool
+#message generation tool -> add all msg files here
 set(msg_files 
   "msg/ProfileTime.msg"
+  "msg/UInt8.msg"
 )
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}

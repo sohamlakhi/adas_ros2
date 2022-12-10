@@ -21,7 +21,8 @@ foreach(PACKAGE
   rclcpp
   adas_common
   geometry_msgs
-  nav_msgs)
+  nav_msgs
+  tf2_geometry_msgs)
 
   find_package(${PACKAGE} REQUIRED)
 
@@ -34,15 +35,21 @@ include_directories(include)
 #  rclcpp adas_common
 #)
 
-add_executable (objtest src/objecttest.cpp)
-ament_target_dependencies(objtest 
-  rclcpp adas_common
+#add_executable (objtest src/objecttest.cpp)
+#ament_target_dependencies(objtest 
+ # rclcpp adas_common
+#)
+
+add_executable (tf2test src/tf2test.cpp)
+ament_target_dependencies(tf2test 
+  rclcpp geometry_msgs tf2_geometry_msgs
 )
 
 # Install Cpp executables
 install(TARGETS
   #bytes_test
-  objtest
+  #objtest
+  tf2test
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

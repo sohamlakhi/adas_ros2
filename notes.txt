@@ -29,3 +29,4 @@ TODAY: compare launch in ros2 and ros1
         compare parameter architecture in ros1 and ros2
         look at dynamic_reconfigure and 
 
+TODO: look at car and ackermann geometry (go over dynamics)

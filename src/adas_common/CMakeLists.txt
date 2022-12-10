@@ -15,18 +15,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(PACKAGE_DEPENDENCIES ament_cmake rclcpp adas_interfaces nav_msgs geometry_msgs)
 #find packages that ALL the library code depends on
 foreach(PACKAGE 
-  ament_cmake
-  rclcpp
-  adas_interfaces
-  nav_msgs
-  geometry_msgs)
+  ${PACKAGE_DEPENDENCIES})
 
   find_package(${PACKAGE} REQUIRED)
 
 endforeach()
-
 
 #Making libraries STATIC for now
 include_directories(include) #adds include property INCLUDE_DIRECTORIES relative to src of current cmakelists.txt. The compiler can now look for these header files
@@ -223,6 +219,9 @@ install(
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
+
+#export all dependencies so downstream packages don't need to source them
+ament_export_dependencies(${PACKAGE_DEPENDENCIES})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

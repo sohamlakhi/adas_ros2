@@ -74,4 +74,26 @@ Can implement and write your own tf conversion package by overloading the tf2::d
 Refer to already implemented functions like tf2_bullet etc.
 See: http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions
     http://wiki.ros.org/tf2/Tutorials/Create%20Data%20Conversion%20Package%20%28C%2B%2B%29
-    
+
+tf2_* conversion references
+http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions
+                 * https://wiki.ros.org/tf2_ros
+                 * http://wiki.ros.org/tf2_geometry_msgs
+                 * http://docs.ros.org/en/noetic/api/tf2_geometry_msgs/html/c++/
+                 * http://docs.ros.org/en/noetic/api/tf2/html/namespacetf2.html#af1255c37833c838543b512febce5e9b1
+                 * http://wiki.ros.org/tf2/Tutorials/Create%20Data%20Conversion%20Package%20%28C%2B%2B%29
+                 * 
+
+Sept 16, 2022
+When constructor chaining, you can only call the immediate parent constructor
+You need to pass all values to the last constructor and chain them upwards through the constructors
+See: https://www.learncpp.com/cpp-tutorial/constructors-and-initialization-of-derived-classes/
+
+Sept 19, 2022:
+You have to set explicit getters and setters in order to access private elements of a class (just like they do with tf2 data types)
+
+you need to export miscellaneous things (packages, include, dependencies, targets, etc.) so downstream packages can implicitly include them 
+Look at ament_export_* documentation 
+
+USE ros2 parameter api to set parameters in real time
+Look at example here: https://github.com/carla-simulator/ros-bridge/blob/master/carla_ackermann_control/src/carla_ackermann_control/carla_ackermann_control_node.py
